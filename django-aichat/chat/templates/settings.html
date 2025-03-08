@@ -1,0 +1,54 @@
+{% load tags %}
+{% load static %}
+
+{% load django_bootstrap5 %}
+
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>settings</title>
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    </head>
+    <body>
+        <style>
+            div.left {
+                text-align: left;
+            }
+            div.center {
+                text-align: center;
+            }
+            div.right {
+                text-align: right;
+            }
+            p.name{
+                font-weight: bold;
+            }
+        </style>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Logout">
+        </form>
+        <form action="{% url 'transmit_dialogue' %}" method="post">
+          {% csrf_token %}
+          <input type="submit" value="Return to chat">
+        </form>
+        <form action="{% url 'change_charaimage' %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Change charaimage">
+        </form>
+                               <form action="/chat/settings/" method="post">
+                                 {% csrf_token %}
+                                 
+                                 
+                                 {% bootstrap_form form %}
+                                 {% bootstrap_button button_type="submit" content="Submit" class="btn btn-primary" %}
+                               </form>
+                
+                        
+    </body>
+</html>
+
+
