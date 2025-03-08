@@ -1,2 +1,2 @@
 # dialogos
-A virtual partner application that sets you free.
+open virtual partner application.
