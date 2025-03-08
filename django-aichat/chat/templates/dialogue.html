@@ -1,0 +1,74 @@
+{% load tags %}
+{% load static %}
+
+{% load django_bootstrap5 %}
+
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>chat</title>
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    </head>
+    <body>
+        <style>
+            div.left {
+                text-align: left;
+            }
+            div.center {
+                text-align: center;
+            }
+            div.right {
+                text-align: right;
+            }
+            p.name{
+                font-weight: bold;
+            }
+        </style>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Logout">
+        </form>
+        <form action="{% url 'settings' %}" method="post">
+          {% csrf_token %}
+          <input type="submit" value="Settings">
+        </form>
+		    <div class="container">
+                        <div class="mt-5">
+                           <div class="row"> 
+                             <img class="col-md-5 object-fit-contain" src="{{ MEDIA_URL }}{{charaimage}}" alt="charaimage"/>
+                             <div class="col-md-5">
+                               {% for dialogue in chat %}
+                               {% if forloop.counter|modulo:2 == 0 %}
+	                       <div class="card text-bg-info mb-3">
+                                  <div class="card-body">
+                                    <h5 class="card-title">{{name}}:</h5>
+                                    <p class="card-text">{{dialogue}}</p>
+                                  </div>
+                               </div>
+                               {% endif %}
+                               {% if forloop.counter|modulo:2 == 1 %}
+                               <div class="card text-bg-success mb-3">
+                                 <div class="card-body">
+                                   <h5 class="card-title">You:</h5>
+                                   <p class="card-text">{{dialogue}}</p>
+                                 </div>
+                               </div>
+                               {% endif %}
+                               {% endfor %}
+                               <form class="mb-3" action="/chat/" method="post">
+                                 {% csrf_token %}
+                                 {% bootstrap_form form %}
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                 {% bootstrap_button button_type="submit" content="Submit" class="btn btn-primary me-md-2" %}
+                               </form>
+                             </div>
+                           </div>
+                        </div>   
+                        
+    </body>
+</html>
+
+
