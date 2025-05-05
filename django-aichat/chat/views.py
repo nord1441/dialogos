@@ -1,14 +1,27 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-
+import os
 from .forms import ChatForm
 from . import openai_chat
+from . import google_chat
 from django.shortcuts import redirect
 from .models import ChatModel
 from .forms import SettingsForm
 from .forms import CharaimageModelForm
 from .models import CharaimageModel
 from django.db.models import Count
+
+vars = {
+  "ai_service": ""
+}
+
+def read_env(identifier):
+  if(len(identifier)!=0):
+    prefix = identifier + "_"
+  else:
+    prefix = ""
+  vars["ai_service"] = os.getenv(prefix + "AI_SERVICE", default="gemini")
+read_env("DJANGO_AICHAT")
 
 global chat
 chat = []
@@ -31,7 +44,11 @@ def transmit_dialogue(request):
         form = ChatForm(request.POST)
         if form.is_valid():
             user_dialogue = form.cleaned_data.get('user_dialogue')
-            assistant_dialogue = openai_chat.chat(user_dialogue, thread)
+            global assistant_dialogue
+            if vars["ai_service"] == "gemini":
+              assistant_dialogue = google_chat.chat(user_dialogue, thread)
+            if vars["ai_service"] == "openai":
+              assistant_dialogue = openai_chat.chat(user_dialogue, thread)
             if len(chat) == 10:
               del chat[:2]
             chat.append(user_dialogue)
