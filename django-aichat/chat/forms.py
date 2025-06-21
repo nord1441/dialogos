@@ -7,7 +7,9 @@ class ChatForm(forms.Form):
 class SettingsForm(forms.Form):
     system_dialogue = forms.CharField(label="system dialogue", max_length=255)
     name = forms.CharField(label="name", max_length=50)
+
 class CharaimageModelForm(forms.ModelForm):
+    charaimage = forms.FileField(label="画像または動画", required=True)
     class Meta:
         model = CharaimageModel
-        fields = '__all__' 
+        fields = '__all__'

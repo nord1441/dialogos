@@ -1,5 +1,6 @@
 {% load tags %}
 {% load static %}
+{% load custom_filters %}
 
 {% load django_bootstrap5 %}
 
@@ -38,7 +39,13 @@
 		    <div class="container">
                         <div class="mt-5">
                            <div class="row"> 
-                             <img class="col-md-5 object-fit-contain" src="{{ MEDIA_URL }}{{charaimage}}" alt="charaimage"/>
+                             {% if charaimage %}
+                               {% if charaimage|lower|endswith:'.mp4' or charaimage|lower|endswith:'.webm' or charaimage|lower|endswith:'.mov' %}
+                                 <video class="col-md-5 object-fit-contain" src="{{ MEDIA_URL }}{{ charaimage }}" controls autoplay loop muted style="max-width:100%; height:auto;"></video>
+                               {% else %}
+                                 <img class="col-md-5 object-fit-contain" src="{{ MEDIA_URL }}{{ charaimage }}" alt="charaimage"/>
+                               {% endif %}
+                             {% endif %}
                              <div class="col-md-5">
                                {% for dialogue in chat %}
                                {% if forloop.counter|modulo:2 == 0 %}
