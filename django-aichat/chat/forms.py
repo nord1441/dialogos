@@ -2,7 +2,7 @@ from django import forms
 from .models import CharaimageModel
 
 class ChatForm(forms.Form):
-    user_dialogue = forms.CharField(label="", max_length=100)
+    user_dialogue = forms.CharField(label="", max_length=1000)
 
 class SettingsForm(forms.Form):
     system_dialogue = forms.CharField(label="system dialogue", max_length=255)
