@@ -12,6 +12,7 @@ urlpatterns = [
     path("", views.transmit_dialogue, name="transmit_dialogue"),
     path("settings/", views.settings, name="settings"),
     path("change_charaimage/", views.change_charaimage, name="change_charaimage"),
+    path('history/', views.chat_history, name='chat_history'),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

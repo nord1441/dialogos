@@ -4,7 +4,7 @@ import os
 import subprocess
 import json
 import pathlib
-from .models import ChatModel
+from .models import ChatModel, ChatHistory
 
 vars = {
   "gemini_api_key": "",
@@ -25,10 +25,12 @@ read_env("DJANGO_AICHAT")
 client = genai.Client(
   api_key=vars["gemini_api_key"]
 )
-def chat(input, thread):
+def chat(input, thread, session_id):
   if len(thread) == 0:
     chatModel = ChatModel.objects.order_by('-id').first()
     thread.append({"role":"system", "content":chatModel.system_dialogue})
+    # Save system message
+    ChatHistory.objects.create(session_id=session_id, role="system", content=chatModel.system_dialogue)
     global googlechat
     googlechat = client.chats.create(
       model=vars["gemini_model"],
@@ -38,8 +40,12 @@ def chat(input, thread):
     )
   dialogue_content = input
   thread.append({"role": "user", "content": dialogue_content})
+  # Save user message
+  ChatHistory.objects.create(session_id=session_id, role="user", content=dialogue_content)
   chat_completion = googlechat.send_message(dialogue_content)
   thread.append({'role': 'assistant','content': chat_completion.text})
+  # Save assistant message
+  ChatHistory.objects.create(session_id=session_id, role="assistant", content=chat_completion.text)
   if((len(thread)-1)/2 == vars["dialogue_num_limit"]+1):
     del thread[1:3]
   return chat_completion.text
