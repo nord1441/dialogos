@@ -8,8 +8,9 @@ from django.shortcuts import redirect
 from .models import ChatModel
 from .forms import SettingsForm
 from .forms import CharaimageModelForm
-from .models import CharaimageModel
+from .models import CharaimageModel, ChatHistory
 from django.db.models import Count
+from datetime import datetime
 
 vars = {
   "ai_service": ""
@@ -45,10 +46,12 @@ def transmit_dialogue(request):
         if form.is_valid():
             user_dialogue = form.cleaned_data.get('user_dialogue')
             global assistant_dialogue
+            # セッションIDをユーザーID+日付で生成
+            session_id = f"{request.user.id}_{datetime.now().strftime('%Y%m%d')}"
             if vars["ai_service"] == "gemini":
-              assistant_dialogue = google_chat.chat(user_dialogue, thread)
+              assistant_dialogue = google_chat.chat(user_dialogue, thread, session_id)
             if vars["ai_service"] == "openai":
-              assistant_dialogue = openai_chat.chat(user_dialogue, thread)
+              assistant_dialogue = openai_chat.chat(user_dialogue, thread, session_id)
             if len(chat) == 10:
               del chat[:2]
             chat.append(user_dialogue)
@@ -89,3 +92,13 @@ def change_charaimage(request):
     else:
         form = CharaimageModelForm()
     return render(request, 'change_charaimage.html', {'form': form})
+
+def chat_history(request):
+    if not request.user.is_authenticated:
+        return redirect(f"login/?next={request.path}")
+    # セッションIDをユーザーID+日付で生成
+    from datetime import datetime
+    session_id = f"{request.user.id}_{datetime.now().strftime('%Y%m%d')}"
+    # 履歴を新しい順で取得
+    histories = ChatHistory.objects.filter(session_id=session_id).order_by('created_at')
+    return render(request, "history.html", {"histories": histories})

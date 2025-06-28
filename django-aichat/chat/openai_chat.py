@@ -3,7 +3,7 @@ import os
 import subprocess
 import json
 import pathlib
-from .models import ChatModel
+from .models import ChatModel, ChatHistory
 
 vars = {
   "openai_api_key": "",
@@ -24,14 +24,20 @@ read_env("DJANGO_AICHAT")
 client = OpenAI(
     api_key = vars["openai_api_key"]
 )
-def chat(input, thread):
+def chat(input, thread, session_id):
   if len(thread) == 0:
     chatModel = ChatModel.objects.order_by('-id').first()
     thread.append({"role":"system", "content":chatModel.system_dialogue})
+    # Save system message
+    ChatHistory.objects.create(session_id=session_id, role="system", content=chatModel.system_dialogue)
   dialogue_content = input
   thread.append({"role": "user", "content": dialogue_content})
+  # Save user message
+  ChatHistory.objects.create(session_id=session_id, role="user", content=dialogue_content)
   chat_completion = client.chat.completions.create(model = vars["openai_gpt_model"],messages = thread)
   thread.append({'role': 'assistant','content': chat_completion.choices[0].message.content})
+  # Save assistant message
+  ChatHistory.objects.create(session_id=session_id, role="assistant", content=chat_completion.choices[0].message.content)
   if((len(thread)-1)/2 == vars["dialogue_num_limit"]+1):
     del thread[1:3]
   return chat_completion.choices[0].message.content

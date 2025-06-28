@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>チャット履歴</title>
+    <style>
+        .role-system { color: gray; }
+        .role-user { color: blue; }
+        .role-assistant { color: green; }
+        .history-message { margin-bottom: 1em; }
+    </style>
+</head>
+<body>
+    <h1>チャット履歴</h1>
+    <div>
+        {% for h in histories %}
+            <div class="history-message role-{{ h.role }}">
+                <strong>{{ h.role|title }}</strong> ({{ h.created_at|date:"Y-m-d H:i:s" }}):<br>
+                {{ h.content|linebreaksbr }}
+            </div>
+        {% empty %}
+            <p>履歴がありません。</p>
+        {% endfor %}
+    </div>
+    <a href="{% url 'transmit_dialogue' %}">チャットに戻る</a>
+</body>
+</html>

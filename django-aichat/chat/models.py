@@ -15,3 +15,12 @@ class ChatModel(models.Model):
 
 class CharaimageModel(models.Model):
     charaimage = models.FileField(upload_to='images/', validators=[validate_image_or_video])
+
+class ChatHistory(models.Model):
+    session_id = models.CharField(max_length=128)
+    role = models.CharField(max_length=16)  # 'user', 'assistant', 'system'
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.session_id} [{self.role}] {self.created_at}"
